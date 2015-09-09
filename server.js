@@ -2,6 +2,15 @@ var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
 var mysql      = require('mysql');
+var fs         = require('fs');
+
+var options = {};
+
+try {
+    options = JSON.parse(fs.readFileSync('options.json'));
+} catch (err) {
+    throw err;
+}
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -10,11 +19,11 @@ var port = process.env.PORT || 8080;
 var router = express.Router();
 
 var db_config = {
-    host: '',
-    user: '',
-    port: 3306,
-    password: '',
-    database: ''
+    host: options.mysql.host,
+    user: options.mysql.user,
+    port: options.mysql.port,
+    password: options.mysql.password,
+    database: options.mysql.database
 };
 
 var connection;
@@ -24,15 +33,14 @@ function initSQL() {
 
     connection.connect(function(err) {
         if (err) {
-            console.log("Error when connecting to database: " + err);
             setTimeout(initSQL, 2000);
         } else {
-            console.log("Connected to MySQL.");
+            console.log('Connected to MySQL.');
         }
     });
 
     connection.on('error', function(err) {
-        console.log('db error', err);
+        console.log('MySQL error: ' + err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             initSQL();
         } else {
@@ -47,7 +55,7 @@ router.get('/', function(req, res) {
     var query = res.req.query;
     
     if (query.key == undefined || query.item == undefined) {
-        res.json({ success: false, error: 'non-existant parameter(s)' });
+        res.json({ success: false, error: options.errors.missing_params });
         return;
     }
     
@@ -61,11 +69,11 @@ router.get('/', function(req, res) {
                 if (row.length > 0) {
                     res.json({ success: true, item: query.item, current_price: row[0].current_price, avg_week_price: row[0].avg_week_price, avg_month_price: row[0].avg_month_price, lastupdate: row[0].lastupdate });
                 } else {
-                    res.json({ success: false, error: 'unknown item' });
+                    res.json({ success: false, error: options.errors.unknown_item });
                 }
             });
         } else {
-            res.json({ success: false, error: 'insufficient privileges' });
+            res.json({ success: false, error: options.errors.invalid_key });
         }
     });
 });

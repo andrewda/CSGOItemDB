@@ -7,7 +7,7 @@
         "database": ""
     },
     "errors": {
-        "missing_params": "non-existant parameter(s)",
+        "missing_params": "missing parameter(s)",
         "invalid_key": "insufficient privileges",
         "unknown_item": "unknown item"
     }

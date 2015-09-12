@@ -2,6 +2,7 @@ var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
 var mysql      = require('mysql');
+var request    = require('request');
 var fs         = require('fs');
 
 var options = {};
@@ -23,7 +24,8 @@ var db_config = {
     user: options.mysql.user,
     port: options.mysql.port,
     password: options.mysql.password,
-    database: options.mysql.database
+    database: options.mysql.database,
+    charset: 'latin1_swedish_ci'
 };
 
 var connection;
@@ -59,17 +61,43 @@ router.get('/', function(req, res) {
         return;
     }
     
-    connection.query('SELECT * FROM `keys` WHERE `key`=\'' + query.key + '\'', function(err, row, fields) {
+    connection.query('SELECT `premium` FROM `keys` WHERE `key`=\'' + query.key + '\'', function(err, row, fields) {
         if (err) throw err;
         
         if (row.length > 0) {
-            connection.query('SELECT * FROM `prices` WHERE `item`=\'' + query.item + '\'', function(err, row, fields) {
+            connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=\'' + query.item + '\'', function(err, row, fields) {
                 if (err) throw err;
                 
                 if (row.length > 0) {
-                    res.json({ success: true, item: query.item, current_price: row[0].current_price, avg_week_price: row[0].avg_week_price, avg_month_price: row[0].avg_month_price, lastupdate: row[0].lastupdate });
+                    res.json({ success: true, item: row[0].item, current_price: row[0].current_price, avg_week_price: row[0].avg_week_price, avg_month_price: row[0].avg_month_price, lastupdate: row[0].lastupdate });
                 } else {
-                    res.json({ success: false, error: options.errors.unknown_item });
+                    request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(query.item), function(error, response, body) {
+                        var json = '';
+                        try {
+                            json = JSON.parse(body);
+                        } catch (e) {
+                            res.json({ success: false, error: options.errors.unknown_item });
+                            return;
+                        }
+                        
+                        var current = Math.floor(Date.now() / 1000);
+                        if (!error && response.statusCode == 200 && body.indexOf('lowest_price') != -1 && body.indexOf('median_price') != -1) {
+                            connection.query('INSERT INTO `prices` (`item`, `current_price`, `avg_month_price`, `avg_week_price`, `lastupdate`) VALUES (\'' + query.item + '\', \'' + json.lowest_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')');
+                            connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (\'' + query.item + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')');
+                            
+                            connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=\'' + query.item + '\'', function(err, row, fields) {
+                                if (err) throw err;
+                                
+                                if (row.length > 0) {
+                                    res.json({ success: true, item: row[0].item, current_price: row[0].current_price, avg_week_price: row[0].avg_week_price, avg_month_price: row[0].avg_month_price, lastupdate: row[0].lastupdate });
+                                } else {
+                                    res.json({ success: false, error: options.errors.unknown_item });
+                                }
+                            });
+                        } else {
+                            res.json({ success: false, error: options.errors.unknown_item });
+                        }
+                    });
                 }
             });
         } else {

@@ -54,17 +54,58 @@ function refreshPrices() {
         }
         
         if (row.length > 0) {
+            var time = Math.floor(Date.now() / 1000);
             row.forEach(function(item) {
                 connection.query('UPDATE `prices` SET `lastupdate`=' + current + ' WHERE `item`=\'' + item.item + '\'');
                 request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(item.item), function (error, response, body) {
                     var json = JSON.parse(body);
                     if (!error && response.statusCode === 200 && json.lowest_price !== undefined) {
+                        time = Math.floor(Date.now() / 1000);
                         connection.query('UPDATE `prices` SET `current_price`=\'' + json.lowest_price.replace('$', '') + '\' WHERE `item`=\'' + item.item + '\'');
+                        connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (\'' + item.item + '\', \'' + json.lowest_price.replace('$', '') + '\', ' + time.toString() + ')');
                         console.log('Succesfully updated ' + item.item + ' w/ ' + json.lowest_price);
                     } else {
                         console.log('An error occured receiving price for item: ' + item.item);
                     }
                 });
+                
+                setTimeout(function() {
+                    time = Math.floor(Date.now() / 1000);
+                    
+                    //get weekly price
+                    connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - 604800).toString(), function(err, row) {
+                        if (err) {
+                            throw err;
+                        }
+                        
+                        var total = 0;
+                        var num = 0;
+                        
+                        row.forEach(function(item) {
+                            total += parseFloat(item.price);
+                            num++;
+                        });
+                        
+                        connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                    });
+                    
+                    //get monthly price
+                    connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - 2592000).toString(), function(err, row) {
+                        if (err) {
+                            throw err;
+                        }
+                        
+                        var total = 0;
+                        var num = 0;
+                        
+                        row.forEach(function(item) {
+                            total += parseFloat(item.price);
+                            num++;
+                        });
+                        
+                        connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                    });
+                }, 10000);
             });
         }
     });

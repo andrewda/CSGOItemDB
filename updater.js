@@ -61,8 +61,8 @@ function refreshPrices() {
                     var json = JSON.parse(body);
                     if (!error && response.statusCode === 200 && json.lowest_price !== undefined) {
                         time = Math.floor(Date.now() / 1000);
-                        connection.query('UPDATE `prices` SET `current_price`=\'' + json.lowest_price.replace('$', '') + '\' WHERE `item`=\'' + item.item + '\'');
-                        connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (\'' + item.item + '\', \'' + json.lowest_price.replace('$', '') + '\', ' + time.toString() + ')');
+                        connection.query('UPDATE `prices` SET `current_price`=\'' + parseFloat(json.lowest_price.replace('$', '')).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                        connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (\'' + item.item + '\', \'' + parseFloat(json.lowest_price.replace('$', '')).toString() + '\', ' + time.toString() + ')');
                         console.log('Succesfully updated ' + item.item + ' w/ ' + json.lowest_price);
                     } else {
                         console.log('An error occured receiving price for item: ' + item.item);
@@ -87,7 +87,7 @@ function refreshPrices() {
                         });
                         
                         if (!isNaN(total/num) && num != 0) {
-                            connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                            connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });
                     
@@ -106,7 +106,7 @@ function refreshPrices() {
                         });
                         
                         if (!isNaN(total/num) && num != 0) {
-                            connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                            connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });
                 }, 10000);

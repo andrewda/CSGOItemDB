@@ -86,7 +86,9 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                        if (!isNaN(total/num) && num != 0) {
+                            connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                        }
                     });
                     
                     //get monthly price
@@ -103,7 +105,9 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                        if (!isNaN(total/num) && num != 0) {
+                            connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toString() + '\' WHERE `item`=\'' + item.item + '\'');
+                        }
                     });
                 }, 10000);
             });

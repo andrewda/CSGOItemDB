@@ -58,7 +58,12 @@ function refreshPrices() {
             row.forEach(function(item) {
                 connection.query('UPDATE `prices` SET `lastupdate`=' + current + ' WHERE `item`=\'' + item.item + '\'');
                 request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(item.item), function (error, response, body) {
-                    var json = JSON.parse(body);
+                    var json = null;
+                    
+                    if (body.indexOf("success") > 0) {
+                        json = JSON.parse(body);
+                    }
+                    
                     if (!error && response.statusCode === 200 && json.lowest_price !== undefined) {
                         time = Math.floor(Date.now() / 1000);
                         connection.query('UPDATE `prices` SET `current_price`=\'' + parseFloat(json.lowest_price.replace('$', '')).toString() + '\' WHERE `item`=\'' + item.item + '\'');

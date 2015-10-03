@@ -73,7 +73,17 @@ router.get('/', function(req, res) {
                 }
                 
                 if (row.length > 0) {
-                    res.json({ success: true, current_price: row[0].current_price, avg_week_price: row[0].avg_week_price, avg_month_price: row[0].avg_month_price, lastupdate: row[0].lastupdate });
+                    var current_price, avg_week_price, avg_month_price;
+                
+                    if (row[0].current_price !== undefined && row[0].avg_week_price !== undefined && row[0].avg_month_price !== undefined) {
+                        current_price = row[0].current_price;
+                        avg_week_price = row[0].avg_week_price;
+                        avg_month_price = row[0].avg_month_price;
+                    }
+                    
+                    if (current_price !== undefined && avg_week_price !== undefined && avg_month_price !== undefined) {
+                        res.json({ success: true, current_price: current_price, avg_week_price: avg_week_price, avg_month_price: avg_month_price, lastupdate: row[0].lastupdate });
+                    }
                 } else {
                     request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(query.item), function(error, response, body) {
                         var json = '';

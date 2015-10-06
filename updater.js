@@ -2,6 +2,9 @@ var request = require('request');
 var mysql   = require('mysql');
 var fs      = require('fs');
 
+const WEEK_SECONDS = 604800;
+const MONTH_SECONDS = 2592000;
+
 var options = {};
 
 try {
@@ -82,7 +85,7 @@ function refreshPrices() {
                     time = Math.floor(Date.now() / 1000);
                     
                     //get weekly price
-                    connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - 604800).toString(), function(err, row) {
+                    connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - WEEK_SECONDS).toString(), function(err, row) {
                         if (err) {
                             throw err;
                         }
@@ -101,7 +104,7 @@ function refreshPrices() {
                     });
                     
                     //get monthly price
-                    connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - 2592000).toString(), function(err, row) {
+                    connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - MONTH_SECONDS).toString(), function(err, row) {
                         if (err) {
                             throw err;
                         }

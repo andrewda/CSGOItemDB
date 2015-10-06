@@ -8,7 +8,8 @@
     },
     "errors": {
         "missing_params": "missing parameter(s)",
-        "invalid_key": "insufficient privileges",
+        "invalid_key": "insufficient privileges (unrecognized key)",
+        "not_premium": "insufficient privileges (not premium)",
         "unknown_item": "unknown item"
     },
     "update_time": 7200,

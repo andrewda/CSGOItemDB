@@ -91,6 +91,7 @@ router.get('/', function(req, res) {
                 } else {
                     request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(query.item), function(error, response, body) {
                         var json = '';
+                        
                         try {
                             json = JSON.parse(body);
                         } catch (e) {
@@ -99,7 +100,7 @@ router.get('/', function(req, res) {
                         }
                         
                         var current = Math.floor(Date.now() / 1000);
-                        if (!error && response.statusCode === 200 && body.indexOf('lowest_price') !== -1 && body.indexOf('median_price') !== -1) {
+                        if (!error && response.statusCode === 200 && json.lowest_price !== undefined && json.median_price !== undefined) {
                             connection.query('INSERT INTO `prices` (`item`, `current_price`, `avg_month_price`, `avg_week_price`, `lastupdate`) VALUES (\'' + query.item + '\', \'' + json.lowest_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')');
                             connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (\'' + query.item + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')');
                             

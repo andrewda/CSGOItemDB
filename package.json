@@ -1,0 +1,27 @@
+{
+  "name": "CSGOItemDB.com",
+  "version": "0.1.1",
+  "description": "A free API to get the most accurate CSGO prices for high tier and low tier items.",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.3",
+    "body-parser": "1.13.3",
+    "mysql": "2.9.0",
+    "request": "^2.53.0"
+  },
+  "engines": {
+    "node": "^0.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrewda/CSGOItemDB.com"
+  },
+  "keywords": [
+    "csgo",
+    "item",
+    "database",
+    "db"
+  ],
+  "author": "Andrew Dassonville",
+  "license": "MIT"
+}

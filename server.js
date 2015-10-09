@@ -13,6 +13,36 @@ try {
     throw err;
 }
 
+function optionsError() {
+    if (options.mysql !== undefined) {
+        if (options.mysql.host === undefined || options.mysql.host === '') {
+            return true;
+        }
+        
+        if (options.mysql.user === undefined || options.mysql.user === '') {
+            return true;
+        }
+        
+        if (options.mysql.port === undefined || options.mysql.port === '') {
+            return true;
+        }
+        
+        if (options.mysql.password === undefined || options.mysql.password === '') {
+            return true;
+        }
+        
+        if (options.mysql.database === undefined || options.mysql.database === '') {
+            return true;
+        }
+    } else {
+        return true;
+    }
+}
+
+if (optionsError()) {
+    throw 'Options not set in `options.json`';
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

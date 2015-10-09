@@ -14,7 +14,7 @@ try {
 }
 
 function optionsError() {
-    if (options.mysql !== undefined) {
+    if (options.mysql !== undefined && options.errors !== undefined) {
         if (options.mysql.host === undefined || options.mysql.host === '') {
             return true;
         }
@@ -32,6 +32,14 @@ function optionsError() {
         }
         
         if (options.mysql.database === undefined || options.mysql.database === '') {
+            return true;
+        }
+        
+        if (options.update_time === undefined || options.update_time === '') {
+            return true;
+        }
+        
+        if (options.refresh_interval === undefined || options.refresh_interval === '') {
             return true;
         }
     } else {

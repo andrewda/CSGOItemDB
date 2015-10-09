@@ -1,9 +1,9 @@
 var request = require('request');
-var mysql   = require('mysql');
-var fs      = require('fs');
+var mysql = require('mysql');
+var fs = require('fs');
 
-const WEEK_SECONDS = 604800;
-const MONTH_SECONDS = 2592000;
+var WEEK_SECONDS = 604800;
+var MONTH_SECONDS = 2592000;
 
 var options = {};
 
@@ -67,7 +67,7 @@ function refreshPrices() {
                 request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(item.item), function (error, response, body) {
                     var json = null;
                     
-                    if (body.indexOf("success") > 0) {
+                    if (body.indexOf('success') > 0) {
                         json = JSON.parse(body);
                     }
                     
@@ -98,7 +98,7 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        if (!isNaN(total/num) && num != 0) {
+                        if (!isNaN(total/num) && num !== 0) {
                             connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });
@@ -117,7 +117,7 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        if (!isNaN(total/num) && num != 0) {
+                        if (!isNaN(total/num) && num !== 0) {
                             connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });

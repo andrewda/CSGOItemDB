@@ -5,8 +5,18 @@ var mysql = require('mysql');
 var request = require('request');
 var fs = require('fs');
 
+var connection;
 var options = {};
+var db_config = {
+    host: options.mysql.host,
+    user: options.mysql.user,
+    port: options.mysql.port,
+    password: options.mysql.password,
+    database: options.mysql.database,
+    charset: 'latin1_swedish_ci'
+};
 
+// get the options from `options.json`
 try {
     options = JSON.parse(fs.readFileSync('options.json'));
 } catch (err) {
@@ -47,6 +57,7 @@ function optionsError() {
     }
 }
 
+// if there is an issue with options, throw an error
 if (optionsError()) {
     throw 'Options not set in `options.json`';
 }
@@ -57,21 +68,11 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 var router = express.Router();
 
-var db_config = {
-    host: options.mysql.host,
-    user: options.mysql.user,
-    port: options.mysql.port,
-    password: options.mysql.password,
-    database: options.mysql.database,
-    charset: 'latin1_swedish_ci'
-};
-
-var connection;
-
 function initSQL() {
     connection = mysql.createConnection(db_config);
 
     connection.connect(function(err) {
+        // if there's an error, try again in 2 seconds
         if (err) {
             setTimeout(initSQL, 2000);
         } else {
@@ -81,6 +82,8 @@ function initSQL() {
 
     connection.on('error', function(err) {
         console.log('MySQL error: ' + err);
+        
+        // reconnect to mysql on `PROTOCOL_CONNECTION_LOST`
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             initSQL();
         } else {
@@ -88,13 +91,18 @@ function initSQL() {
         }
     });
     
+    // keep the connection alive
     setInterval(function() {
         connection.query('SELECT 1');
     }, 5000);
 }
 
+// initiate mysql
 initSQL();
 
+////////////////////
+// On GET request //
+////////////////////
 router.get('/', function(req, res) {
     var query = res.req.query;
     
@@ -103,6 +111,7 @@ router.get('/', function(req, res) {
         return;
     }
     
+    // check if the key exists
     connection.query('SELECT `premium` FROM `keys` WHERE `key`=\'' + query.key + '\'', function(err, row) {
         if (err) {
             throw err;
@@ -127,6 +136,7 @@ router.get('/', function(req, res) {
                         res.json({ success: true, current_price: current_price, avg_week_price: avg_week_price, avg_month_price: avg_month_price, lastupdate: row[0].lastupdate });
                     }
                 } else {
+                    // if the item is not found in our database, get the data from the market
                     request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(query.item), function(error, response, body) {
                         var json = '';
                         
@@ -165,9 +175,9 @@ router.get('/', function(req, res) {
     });
 });
 
-// REGISTER OUR ROUTE
+// register the router
 app.use('/api', router);
 
-// START THE SERVER
+// start the server
 app.listen(port);
 console.log('Magic happens on port ' + port);

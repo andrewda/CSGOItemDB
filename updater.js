@@ -1,6 +1,6 @@
 var request = require('request');
-var mysql   = require('mysql');
-var fs      = require('fs');
+var mysql = require('mysql');
+var fs = require('fs');
 
 
 // define constants

@@ -1,18 +1,14 @@
 var request = require('request');
-var mysql = require('mysql');
-var fs = require('fs');
+var mysql   = require('mysql');
+var fs      = require('fs');
 
+
+// define constants
 var WEEK_SECONDS = 604800;
 var MONTH_SECONDS = 2592000;
 
+var connection;
 var options = {};
-
-try {
-    options = JSON.parse(fs.readFileSync('options.json'));
-} catch (err) {
-    throw err;
-}
-
 var db_config = {
     host: options.mysql.host,
     user: options.mysql.user,
@@ -22,12 +18,18 @@ var db_config = {
     charset: 'latin1_swedish_ci'
 };
 
-var connection;
+// get the options from `options.json`
+try {
+    options = JSON.parse(fs.readFileSync('options.json'));
+} catch (err) {
+    throw err;
+}
 
 function initSQL() {
     connection = mysql.createConnection(db_config);
 
     connection.connect(function(err) {
+        // if there's an error, try again in 2 seconds
         if (err) {
             setTimeout(initSQL, 2000);
         } else {
@@ -37,6 +39,8 @@ function initSQL() {
 
     connection.on('error', function(err) {
         console.log('MySQL error: ' + err);
+        
+        // reconnect to mysql on `PROTOCOL_CONNECTION_LOST`
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             initSQL();
         } else {
@@ -44,15 +48,18 @@ function initSQL() {
         }
     });
     
+    // keep the connection alive
     setInterval(function() {
         connection.query('SELECT 1');
     }, 5000);
 }
 
+// initiate mysql
 initSQL();
 
-setTimeout(refreshPrices, 1000);
-
+////////////////////////////////////////////////////
+// Update the prices of all items in the database //
+////////////////////////////////////////////////////
 function refreshPrices() {
     var current = Math.floor(Date.now() / 1000);
     connection.query('SELECT * FROM `prices` WHERE `lastupdate`<' + (parseInt(current) - options.update_time).toString(), function(err, row) {
@@ -67,7 +74,7 @@ function refreshPrices() {
                 request('http://steamcommunity.com/market/priceoverview/?country=US&currency=1&appid=730&market_hash_name=' + encodeURIComponent(item.item), function (error, response, body) {
                     var json = null;
                     
-                    if (body.indexOf('success') > 0) {
+                    if (body.indexOf("success") > 0) {
                         json = JSON.parse(body);
                     }
                     
@@ -84,7 +91,7 @@ function refreshPrices() {
                 setTimeout(function() {
                     time = Math.floor(Date.now() / 1000);
                     
-                    //get weekly price
+                    // get weekly price
                     connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - WEEK_SECONDS).toString(), function(err, row) {
                         if (err) {
                             throw err;
@@ -98,12 +105,12 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        if (!isNaN(total/num) && num !== 0) {
+                        if (!isNaN(total/num) && num != 0) {
                             connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });
                     
-                    //get monthly price
+                    // get monthly price
                     connection.query('SELECT * FROM `price_history` WHERE `item`=\'' + item.item + '\' AND `time`>' + (time - MONTH_SECONDS).toString(), function(err, row) {
                         if (err) {
                             throw err;
@@ -117,7 +124,7 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        if (!isNaN(total/num) && num !== 0) {
+                        if (!isNaN(total/num) && num != 0) {
                             connection.query('UPDATE `prices` SET `avg_month_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });
@@ -127,4 +134,19 @@ function refreshPrices() {
     });
 }
 
+///////////////////////////////////////////////////////////////
+// Delete all rows from `price_history` older than one month //
+///////////////////////////////////////////////////////////////
+function deleteOld() {
+    var time = Math.floor(Date.now() / 1000);
+    
+    connection.query('DELETE FROM `price_history` WHERE `time`<' + (time - MONTH_SECONDS).toString(), function (err) {
+        if (err) {
+            throw err;
+        }
+    });
+}
+
+setTimeout(refreshPrices, 1000);
 setInterval(refreshPrices, options.refresh_interval);
+setInterval(deleteOld, options.delete_old_interval);

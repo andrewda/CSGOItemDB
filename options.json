@@ -13,5 +13,6 @@
         "unknown_item": "unknown item"
     },
     "update_time": 7200,
-    "refresh_interval": 60000
+    "refresh_interval": 60000,
+    "delete_old_interval": 90000
 }

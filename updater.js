@@ -2,7 +2,6 @@ var request = require('request');
 var mysql = require('mysql');
 var fs = require('fs');
 
-
 // define constants
 var WEEK_SECONDS = 604800;
 var MONTH_SECONDS = 2592000;

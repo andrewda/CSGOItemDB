@@ -1,6 +1,6 @@
 {
   "name": "CSGOItemDB.com",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A free API to get the most accurate CSGO prices for high tier and low tier items.",
   "main": "server.js",
   "dependencies": {

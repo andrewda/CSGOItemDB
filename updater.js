@@ -2,20 +2,13 @@ var request = require('request');
 var mysql = require('mysql');
 var fs = require('fs');
 
+
 // define constants
 var WEEK_SECONDS = 604800;
 var MONTH_SECONDS = 2592000;
 
 var connection;
 var options = {};
-var db_config = {
-    host: options.mysql.host,
-    user: options.mysql.user,
-    port: options.mysql.port,
-    password: options.mysql.password,
-    database: options.mysql.database,
-    charset: 'latin1_swedish_ci'
-};
 
 // get the options from `options.json`
 try {
@@ -23,6 +16,22 @@ try {
 } catch (err) {
     throw err;
 }
+
+// if we have an environmental variable, use it
+var mysqlHost = process.env.MYSQL_HOST || options.mysql.host;
+var mysqlUser = process.env.MYSQL_USER || options.mysql.user;
+var mysqlPort = process.env.MYSQL_PORT || options.mysql.port;
+var mysqlPass = process.env.MYSQL_PASS || options.mysql.password;
+var mysqlDB = process.env.MYSQL_DB || options.mysql.database;
+
+var db_config = {
+    host: mysqlHost,
+    user: mysqlUser,
+    port: mysqlPort,
+    password: mysqlPass,
+    database: mysqlDB,
+    charset: 'latin1_swedish_ci'
+};
 
 function initSQL() {
     connection = mysql.createConnection(db_config);

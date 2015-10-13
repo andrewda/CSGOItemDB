@@ -2,4 +2,4 @@
 A free API to get the most accurate CSGO prices for high tier and low tier items.
 
 ## Example
-I will setup Heroku or similar hosting in a few days.
+Heroku example: https://csgoitemdb.herokuapp.com/api/?key=exampleP&item=AWP+|+Asiimov+(Field-Tested)

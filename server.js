@@ -31,45 +31,6 @@ var db_config = {
     charset: 'latin1_swedish_ci'
 };
 
-function optionsError() {
-    if (options.mysql !== undefined && options.errors !== undefined) {
-        if (options.mysql.host === undefined || options.mysql.host === '') {
-            return true;
-        }
-        
-        if (options.mysql.user === undefined || options.mysql.user === '') {
-            return true;
-        }
-        
-        if (options.mysql.port === undefined || options.mysql.port === '') {
-            return true;
-        }
-        
-        if (options.mysql.password === undefined || options.mysql.password === '') {
-            return true;
-        }
-        
-        if (options.mysql.database === undefined || options.mysql.database === '') {
-            return true;
-        }
-        
-        if (options.update_time === undefined || options.update_time === '') {
-            return true;
-        }
-        
-        if (options.refresh_interval === undefined || options.refresh_interval === '') {
-            return true;
-        }
-    } else {
-        return true;
-    }
-}
-
-// if there is an issue with options, throw an error
-if (optionsError()) {
-    throw 'Options not set in `options.json`';
-}
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

@@ -81,7 +81,7 @@ router.get('/', function(req, res) {
     }
     
     // check if the key exists
-    connection.query('SELECT `premium` FROM `keys` WHERE `key`=\'' + query.key + '\'', function(err, row) {
+    connection.query('SELECT `premium` FROM `keys` WHERE `key`=?', [query.key], function(err, row) {
         if (err) {
             throw err;
         }
@@ -89,7 +89,7 @@ router.get('/', function(req, res) {
         var isPremium = row.premium;
         
         if (row.length > 0) {
-            connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=\'' + query.item + '\'', function(err, row) {
+            connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=?', [query.item], function(err, row) {
                 if (err) {
                     throw err;
                 }
@@ -120,10 +120,10 @@ router.get('/', function(req, res) {
                         
                         var current = Math.floor(Date.now() / 1000);
                         if (!error && response.statusCode === 200 && json.lowest_price !== undefined && json.median_price !== undefined) {
-                            connection.query('INSERT INTO `prices` (`item`, `current_price`, `avg_month_price`, `avg_week_price`, `lastupdate`) VALUES (\'' + query.item + '\', \'' + json.lowest_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')');
-                            connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (\'' + query.item + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')');
+                            connection.query('INSERT INTO `prices` (`item`, `current_price`, `avg_month_price`, `avg_week_price`, `lastupdate`) VALUES (?, \'' + json.lowest_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', \'' + json.median_price.replace('$', '') + '\', ' + current + ')', [query.item]);
+                            connection.query('INSERT INTO `price_history` (`item`, `price`, `time`) VALUES (?, \'' + json.median_price.replace('$', '') + '\', ' + current + ')', [query.item]);
                             
-                            connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=\'' + query.item + '\'', function(err, row) {
+                            connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=?', [query.item], function(err, row) {
                                 if (err) {
                                     throw err;
                                 }
@@ -155,7 +155,7 @@ router.get('/all', function(req, res) {
     }
     
     // check if the key exists
-    connection.query('SELECT `premium` FROM `keys` WHERE `key`=\'' + query.key + '\'', function(err, row) {
+    connection.query('SELECT `premium` FROM `keys` WHERE `key`=?', [query.key], function(err, row) {
         if (err) {
             throw err;
         }

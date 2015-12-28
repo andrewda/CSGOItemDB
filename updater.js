@@ -112,7 +112,7 @@ function refreshPrices() {
                             num++;
                         });
                         
-                        if (!isNaN(total/num) && num != 0) {
+                        if (!isNaN(total/num) && num !== 0) {
                             connection.query('UPDATE `prices` SET `avg_week_price`=\'' + (total/num).toFixed(2).toString() + '\' WHERE `item`=\'' + item.item + '\'');
                         }
                     });

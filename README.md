@@ -16,22 +16,22 @@ Step 2. Edit options.json
 ```JSON
 {
     "mysql": {
-        "host": "", - YOUR MYSQL HOST
-        "user": "", - YOUR MYSQL USERNAME
-        "port": 3306, - THE PORT TO YOUR MYSQL SERVER
-        "password": "", - YOUR MYSQL PASSWORD
-        "database": "" - THE DATABASE YOU WANT TO CONNECT TO
+        "host": "MYSQL HOST",
+        "user": "MYSQL USERNAME",
+        "port": 3306,
+        "password": "MYSQL PASSWORD",
+        "database": "DATABASE NAME"
     },
     "errors": {
-        "missing_params": "missing parameter(s)", - ERROR DISPLAYED FOR `missing_params`
-        "invalid_key": "insufficient privileges (unrecognized key)", - ERROR DISPLAYED FOR `invalid_key`
-        "not_premium": "insufficient privileges (not premium)", - ERROR DISPLAYED FOR `not_premium`
-        "unknown_item": "unknown item" - ERROR DISPLAYED FOR `unknown_item`
+        "missing_params": "missing parameter(s)",
+        "invalid_key": "insufficient privileges (unrecognized key)",
+        "not_premium": "insufficient privileges (not premium)",
+        "unknown_item": "unknown item"
     },
-    "backpacktf_key": "", - YOUR BACKPACK.TF API KEY (can be retreived from http://backpack.tf/api)
-    "update_time": 7200, - HOW OFTEN WE SHOULD UPDATE STORED PRICES (in seconds)
-    "refresh_interval": 60000, - HOW OFTEN WE SHOULD CHECK FOR PRICES TO UPDATE (in milliseconds)
-    "delete_old_interval": 90000 - HOW OFTEN WE SHOULD DELETE OLD PRICES
+    "backpacktf_key": "BACKPACK.TF API KEY (can be retreived from http://backpack.tf/api)",
+    "update_time": 7200,
+    "refresh_interval": 60000,
+    "delete_old_interval": 90000
 }
 ```
 

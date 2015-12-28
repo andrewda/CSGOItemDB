@@ -5,13 +5,13 @@ CSGOItemDB is a simple API which allows users to get the prices of CS:GO skins.
 
 ## Setup
 
-1. Clone the repository to your computer or download the files manually.
+Step 1. Clone the repository to your computer or download the files manually.
 
 ```
 git clone https://github.com/andrewda/CSGOItemDB.com
 ```
 
-2. Edit options.json
+Step 2. Edit options.json
 
 ```JSON
 {
@@ -35,15 +35,15 @@ git clone https://github.com/andrewda/CSGOItemDB.com
 }
 ```
 
-3. Configure your database with config.sql
+Step 3. Configure your database with config.sql
 
-4. Run the server
+Step 4. Run the server
 
 ```
 node server.json
 ```
 
-5. Run the updater
+Step 5. Run the updater
 
 ```
 node updater.js

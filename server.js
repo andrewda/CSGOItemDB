@@ -8,6 +8,9 @@ var fs = require('fs');
 var connection;
 var options = {};
 
+var lastCheck = 0;
+var lastResult;
+
 // get the options from `options.json`
 try {
     options = JSON.parse(fs.readFileSync('options.json'));
@@ -179,6 +182,57 @@ router.get('/all', function(req, res) {
                     
                     res.json({ success: true, items: output });
                 });
+            } else {
+                res.json({ success: false, error: options.errors.not_premium });
+            }
+        } else {
+            res.json({ success: false, error: options.errors.invalid_key });
+        }
+    });
+});
+
+router.get('/backpacktf', function(req, res) {
+    var query = res.req.query;
+    
+    if (query.key === undefined) {
+        res.json({ success: false, error: options.errors.missing_params });
+        return;
+    }
+    
+    // check if the key exists
+    connection.query('SELECT `premium` FROM `keys` WHERE `key`=?', [query.key], function(err, row) {
+        if (err) {
+            throw err;
+        }
+        
+        var isPremium = row.premium;
+        
+        if (row.length > 0) {
+            if (isPremium) {
+                if (Math.floor(Date.now() / 1000) - lastCheck >= 120) {
+                    request('http://backpack.tf/api/IGetMarketPrices/v1/?key=' + options.backpacktf_key + '&appid=730', function(err, response, body) {
+                        if (err) {
+                            console.log("Error receiving backpack.tf prices");
+                            res.json({ success: true, items: lastResult });
+                            return;
+                        }
+                        
+                        try {
+                            body = JSON.parse(body);
+                        } catch (e) {
+                            console.log("Error parsing JSON from backpack.tf");
+                            res.json({ success: true, items: lastResult });
+                            return;
+                        }
+                        
+                        if (body.response.success) {
+                            res.json({ success: true, items: body.response.items });
+                            lastResult = body.response.items;
+                        } else {
+                            res.json({ success: true, items: lastResult });
+                        }
+                    });
+                }
             } else {
                 res.json({ success: false, error: options.errors.not_premium });
             }

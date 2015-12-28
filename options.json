@@ -12,6 +12,7 @@
         "not_premium": "insufficient privileges (not premium)",
         "unknown_item": "unknown item"
     },
+    "backpacktf_key": "",
     "update_time": 7200,
     "refresh_interval": 60000,
     "delete_old_interval": 90000

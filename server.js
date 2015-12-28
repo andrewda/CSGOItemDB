@@ -163,7 +163,7 @@ router.get('/all', function(req, res) {
         var isPremium = row.premium;
         
         if (row.length > 0) {
-            if (true) {
+            if (isPremium) {
                 connection.query('SELECT `item`,`current_price` FROM `prices` ORDER BY `item` ASC', function(err, row) {
                     if (err) {
                         throw err;

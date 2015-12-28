@@ -89,7 +89,7 @@ router.get('/', function(req, res) {
             throw err;
         }
         
-        var isPremium = row.premium;
+        var isPremium = row[0].premium;
         
         if (row.length > 0) {
             connection.query('SELECT `item`,`current_price`,`avg_week_price`,`avg_month_price`,`lastupdate` FROM `prices` WHERE `item`=?', [query.item], function(err, row) {
@@ -163,7 +163,7 @@ router.get('/all', function(req, res) {
             throw err;
         }
         
-        var isPremium = row.premium;
+        var isPremium = row[0].premium;
         
         if (row.length > 0) {
             if (isPremium) {
@@ -205,7 +205,7 @@ router.get('/backpacktf', function(req, res) {
             throw err;
         }
         
-        var isPremium = row.premium;
+        var isPremium = row[0].premium;
         
         if (row.length > 0) {
             if (isPremium) {

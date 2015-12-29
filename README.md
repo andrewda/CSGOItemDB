@@ -1,4 +1,4 @@
-# CSGOItemDB.com
+# CSGOItemDB
 [![Codacy Badge](https://api.codacy.com/project/badge/3740b21ca3744edb80a376a9a0596ffa)](https://www.codacy.com/app/dassonville-andrew/CSGOItemDB-com)
 
 CSGOItemDB is a simple API which allows users to get the prices of CS:GO skins.
@@ -8,7 +8,7 @@ CSGOItemDB is a simple API which allows users to get the prices of CS:GO skins.
 Step 1. Clone the repository to your computer or download the files manually.
 
 ```
-git clone https://github.com/andrewda/CSGOItemDB.com
+git clone https://github.com/andrewda/CSGOItemDB
 ```
 
 Step 2. Edit options.json

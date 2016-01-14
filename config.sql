@@ -1,5 +1,5 @@
 /*
- * This is the MySQL config script for http://github.com/andrewda/CSGOItemDB.com
+ * This is the MySQL config script for http://github.com/andrewda/CSGOItemDB
  * It will create 3 tables, `prices`, `price_history`, and `keys`
  */
 

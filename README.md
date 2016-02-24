@@ -40,7 +40,7 @@ Step 3. Configure your database with config.sql
 Step 4. Run the server
 
 ```
-node server.json
+node server.js
 ```
 
 Step 5. Run the updater

@@ -1,11 +1,4 @@
 {
-    "mysql": {
-        "host": "",
-        "user": "",
-        "port": 3306,
-        "password": "",
-        "database": ""
-    },
     "errors": {
         "missing_params": "missing parameter(s)",
         "invalid_key": "insufficient privileges (unrecognized key)",
@@ -14,6 +7,6 @@
     },
     "backpacktf_key": "",
     "update_time": 7200,
-    "refresh_interval": 60000,
-    "delete_old_interval": 90000
+    "refresh_interval": 3600,
+    "delete_old_interval": 9000
 }

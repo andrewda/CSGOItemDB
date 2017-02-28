@@ -15,13 +15,6 @@ Step 2. Edit options.json
 
 ```JSON
 {
-    "mysql": {
-        "host": "MYSQL HOST",
-        "user": "MYSQL USERNAME",
-        "port": 3306,
-        "password": "MYSQL PASSWORD",
-        "database": "DATABASE NAME"
-    },
     "errors": {
         "missing_params": "missing parameter(s)",
         "invalid_key": "insufficient privileges (unrecognized key)",
@@ -35,7 +28,11 @@ Step 2. Edit options.json
 }
 ```
 
-Step 3. Configure your database with config.sql
+Step 3. Download any missing dependencies
+```
+npm update
+```
+
 
 Step 4. Run the server
 

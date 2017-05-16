@@ -29,8 +29,9 @@ Step 2. Edit options.json
 ```
 
 Step 3. Download any missing dependencies
+
 ```
-npm update
+npm install
 ```
 
 

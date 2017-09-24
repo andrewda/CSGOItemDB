@@ -3,6 +3,10 @@
 
 CSGOItemDB is a simple API which allows users to get the prices of CS:GO skins.
 
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/WWKSZ8BufMHxCu7dPGG4np4x/andrewda/CSGOItemDB'>
+  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/WWKSZ8BufMHxCu7dPGG4np4x/andrewda/CSGOItemDB.svg' />
+</a>
+
 ## Setup
 
 Step 1. Clone the repository to your computer or download the files manually.
